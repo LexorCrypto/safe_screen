@@ -3,7 +3,7 @@ import SafeScreenCore
 
 @MainActor
 final class StatusMenuController: NSObject {
-    private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+    private let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     private let settingsStore: SettingsStore
     private let loginItemController: LoginItemController
     private let overlayController: OverlayController
@@ -28,6 +28,8 @@ final class StatusMenuController: NSObject {
 
     private func configure() {
         statusItem.button?.image = StatusIcon.make()
+        statusItem.button?.imagePosition = .imageLeading
+        statusItem.button?.title = " Safe"
         statusItem.button?.toolTip = "Safe Screen"
 
         let menu = NSMenu()

@@ -16,6 +16,12 @@ The app bundle is created at:
 build/Safe Screen.app
 ```
 
+If the workspace lives in `Documents`, macOS can attach FileProvider metadata to app bundles inside `build/`. For the real app you want to run every day, install it into `/Applications`:
+
+```bash
+./scripts/install_app.sh
+```
+
 ## Run
 
 ```bash
@@ -28,6 +34,8 @@ Safe Screen appears only in the menu bar. From the menu you can:
 - turn protection on or off;
 - enable `Open at Login`;
 - quit the app.
+
+After launch, look for the green `Safe` item in the macOS menu bar. The app intentionally has no Dock icon and no main window.
 
 ## Debug Timing
 

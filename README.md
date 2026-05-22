@@ -2,7 +2,7 @@
 
 Safe Screen is a native macOS app that protects an OLED screen from a static desktop while a MacBook is connected to power and used remotely.
 
-After 20 seconds of local input inactivity, it opens black full-screen overlay windows on all displays and renders five low-brightness Matrix-style vertical streams. Every 20 seconds the streams move to new random screen positions through a smooth crossfade/slide transition.
+After 1 minute of local input inactivity, it opens black full-screen overlay windows on all displays and renders five low-brightness Matrix-style vertical streams. Every 20 seconds the streams move to new random screen positions through a smooth crossfade/slide transition.
 
 ## Build
 
@@ -47,7 +47,7 @@ SAFE_SCREEN_IDLE_SECONDS=5 SAFE_SCREEN_LAYOUT_SECONDS=4 SAFE_SCREEN_TRANSITION_S
 
 The production defaults are:
 
-- idle threshold: `20s`;
+- idle threshold: `60s`;
 - stream position rotation: `20s`;
 - smooth transition duration: `4s`;
 - stream count: `5`.

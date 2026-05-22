@@ -8,7 +8,7 @@ public struct SafeScreenConfiguration: Equatable, Sendable {
     public var minimumColumnInset: Double
 
     public init(
-        idleThreshold: TimeInterval = 20,
+        idleThreshold: TimeInterval = 60,
         layoutChangeInterval: TimeInterval = 20,
         transitionDuration: TimeInterval = 4,
         streamCount: Int = 5,

@@ -254,8 +254,8 @@ scripts/build_dmg.sh
 Особенности:
 
 - использует `scripts/build_app.sh`;
-- подписывает `.app` ad-hoc подписью;
-- копирует `.app` во временную staging-папку;
+- копирует `.app` во временную staging-папку (`$TMPDIR`);
+- чистит xattrs и переподписывает `.app` ad-hoc подписью в staging;
 - добавляет symlink `Applications`;
 - создает сжатый `UDZO` образ через `hdiutil`;
 - запускает `hdiutil verify`.

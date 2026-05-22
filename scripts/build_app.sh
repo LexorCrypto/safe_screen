@@ -33,9 +33,30 @@ cp "$ROOT_DIR/Resources/Info.plist" "$APP_DIR/Contents/Info.plist"
 swift "$ROOT_DIR/scripts/generate_icon.swift" "$APP_DIR/Contents/Resources/SafeScreen.icns"
 
 chmod +x "$APP_DIR/Contents/MacOS/$APP_NAME"
-xattr -cr "$APP_DIR" 2>/dev/null || true
-codesign --force --deep --sign - "$APP_DIR" >/dev/null
-xattr -cr "$APP_DIR" 2>/dev/null || true
-codesign --verify --deep --strict --verbose=2 "$APP_DIR" >/dev/null
+
+# The repo may live in a FileProvider-synced folder (iCloud / Documents),
+# whose daemon re-applies com.apple.FinderInfo xattrs onto the bundle.
+# That races with codesign ("resource fork ... not allowed"). Clear
+# xattrs, sign and verify as one unit, and retry if the race bites.
+sign_and_verify() {
+  xattr -cr "$APP_DIR" 2>/dev/null || true
+  codesign --force --deep --sign - "$APP_DIR" 2>/dev/null || return 1
+  codesign --verify --deep --strict "$APP_DIR" 2>/dev/null || return 1
+}
+
+signed=0
+for attempt in 1 2 3; do
+  if sign_and_verify; then
+    signed=1
+    break
+  fi
+  printf 'codesign attempt %d hit the FileProvider xattr race, retrying...\n' "$attempt" >&2
+  sleep 1
+done
+
+if [[ "$signed" -ne 1 ]]; then
+  printf 'codesign failed after 3 attempts on %s\n' "$APP_DIR" >&2
+  exit 1
+fi
 
 printf 'Built %s\n' "$APP_DIR"

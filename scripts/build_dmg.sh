@@ -30,6 +30,14 @@ mkdir -p "$DIST_DIR"
 cp -R "$APP_DIR" "$STAGING_DIR/${APP_NAME}.app"
 ln -s /Applications "$STAGING_DIR/Applications"
 
+# build/ may sit in a FileProvider-synced folder that re-applies
+# com.apple.FinderInfo xattrs and races with codesign. The staging
+# copy lives under $TMPDIR (no FileProvider), so strip xattrs and
+# re-sign here for a deterministically clean signature in the DMG.
+xattr -cr "$STAGING_DIR/${APP_NAME}.app"
+codesign --force --deep --sign - "$STAGING_DIR/${APP_NAME}.app" >/dev/null
+codesign --verify --deep --strict "$STAGING_DIR/${APP_NAME}.app" >/dev/null
+
 hdiutil create \
   -volname "$APP_NAME $VERSION" \
   -srcfolder "$STAGING_DIR" \

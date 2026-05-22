@@ -20,6 +20,11 @@
 - `scripts/build_app.sh` и `scripts/build_dmg.sh` берут версию из файла `VERSION`.
 - GitHub Actions проверяет, что релизный tag совпадает с файлом `VERSION`, и падает при рассинхроне.
 
+### Fixed
+
+- `scripts/build_app.sh` повторяет `codesign` (до 3 попыток), если FileProvider-демон возвращает `com.apple.FinderInfo` xattrs на бандл во время подписи.
+- `scripts/build_dmg.sh` чистит xattrs и переподписывает бандл в staging-папке (`$TMPDIR`), гарантируя чистую подпись в релизном DMG независимо от состояния `build/`.
+
 ## [0.2.6] - 2026-05-22
 
 ### Added

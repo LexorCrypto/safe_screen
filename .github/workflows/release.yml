@@ -22,7 +22,7 @@ jobs:
         run: swift test
 
       - name: Build DMG
-        run: ./scripts/build_dmg.sh
+        run: bash ./scripts/build_dmg.sh
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4

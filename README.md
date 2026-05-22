@@ -25,17 +25,17 @@ If the workspace lives in `Documents`, macOS can attach FileProvider metadata to
 ## Run
 
 ```bash
-open "build/Safe Screen.app"
+open "/Applications/Safe Screen.app"
 ```
 
-Safe Screen appears only in the menu bar. From the menu you can:
+On launch, Safe Screen opens a small control window. The app also stays available in the macOS menu bar as `Safe`. From the window or menu you can:
 
-- activate the screen manually with `Activate Now`;
+- activate the screen manually with `Активировать сейчас`;
 - turn protection on or off;
-- enable `Open at Login`;
+- enable `Открывать при входе`;
 - quit the app.
 
-After launch, look for the green `Safe` item in the macOS menu bar. The app intentionally has no Dock icon and no main window.
+The app intentionally has no Dock icon. If you close the control window, open it again from the green `Safe` item in the macOS menu bar.
 
 ## Debug Timing
 

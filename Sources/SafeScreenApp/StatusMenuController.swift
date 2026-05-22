@@ -8,6 +8,7 @@ final class StatusMenuController: NSObject {
     private let loginItemController: LoginItemController
     private let overlayController: OverlayController
     private let configuration: SafeScreenConfiguration
+    private let showControlPanel: () -> Void
 
     private let protectionItem = NSMenuItem()
     private let loginItem = NSMenuItem()
@@ -16,12 +17,14 @@ final class StatusMenuController: NSObject {
         settingsStore: SettingsStore,
         loginItemController: LoginItemController,
         overlayController: OverlayController,
-        configuration: SafeScreenConfiguration
+        configuration: SafeScreenConfiguration,
+        showControlPanel: @escaping () -> Void
     ) {
         self.settingsStore = settingsStore
         self.loginItemController = loginItemController
         self.overlayController = overlayController
         self.configuration = configuration
+        self.showControlPanel = showControlPanel
         super.init()
         configure()
     }
@@ -33,11 +36,15 @@ final class StatusMenuController: NSObject {
         statusItem.button?.toolTip = "Safe Screen"
 
         let menu = NSMenu()
-        let activateItem = NSMenuItem(title: "Activate Now", action: #selector(activateNow), keyEquivalent: "")
+        let showPanelItem = NSMenuItem(title: "Открыть панель", action: #selector(showPanel), keyEquivalent: "")
+        showPanelItem.target = self
+        menu.addItem(showPanelItem)
+
+        let activateItem = NSMenuItem(title: "Активировать сейчас", action: #selector(activateNow), keyEquivalent: "")
         activateItem.target = self
         menu.addItem(activateItem)
 
-        let idleItem = NSMenuItem(title: "Idle threshold: \(Int(configuration.idleThreshold))s", action: nil, keyEquivalent: "")
+        let idleItem = NSMenuItem(title: "Автовключение: \(Int(configuration.idleThreshold)) сек", action: nil, keyEquivalent: "")
         idleItem.isEnabled = false
         menu.addItem(idleItem)
 
@@ -53,7 +60,7 @@ final class StatusMenuController: NSObject {
 
         menu.addItem(.separator())
 
-        let quitItem = NSMenuItem(title: "Quit Safe Screen", action: #selector(quit), keyEquivalent: "q")
+        let quitItem = NSMenuItem(title: "Выход", action: #selector(quit), keyEquivalent: "q")
         quitItem.target = self
         menu.addItem(quitItem)
 
@@ -62,10 +69,14 @@ final class StatusMenuController: NSObject {
     }
 
     func refresh() {
-        protectionItem.title = settingsStore.protectionEnabled ? "Protection: On" : "Protection: Off"
+        protectionItem.title = settingsStore.protectionEnabled ? "Защита: включена" : "Защита: выключена"
         protectionItem.state = settingsStore.protectionEnabled ? .on : .off
-        loginItem.title = "Open at Login"
+        loginItem.title = "Открывать при входе"
         loginItem.state = loginItemController.isEnabled ? .on : .off
+    }
+
+    @objc private func showPanel() {
+        showControlPanel()
     }
 
     @objc private func activateNow() {
@@ -92,7 +103,7 @@ final class StatusMenuController: NSObject {
 
     private func presentLoginItemError(_ error: Error) {
         let alert = NSAlert()
-        alert.messageText = "Open at Login could not be changed"
+        alert.messageText = "Не удалось изменить автозапуск"
         alert.informativeText = error.localizedDescription
         alert.alertStyle = .warning
         alert.runModal()

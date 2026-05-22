@@ -5,7 +5,7 @@ final class MatrixAnimationModelTests: XCTestCase {
     func testDefaultConfigurationMatchesProductPlan() {
         let configuration = SafeScreenConfiguration()
 
-        XCTAssertEqual(configuration.idleThreshold, 300)
+        XCTAssertEqual(configuration.idleThreshold, 20)
         XCTAssertEqual(configuration.layoutChangeInterval, 20)
         XCTAssertEqual(configuration.streamCount, 5)
         XCTAssertGreaterThan(configuration.transitionDuration, 0)

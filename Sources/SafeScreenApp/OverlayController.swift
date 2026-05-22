@@ -1,5 +1,4 @@
 import AppKit
-import CoreGraphics
 import SafeScreenCore
 
 enum OverlayReason {
@@ -11,10 +10,10 @@ enum OverlayReason {
 final class OverlayController {
     private let configuration: SafeScreenConfiguration
     private var windows: [SafeScreenWindow] = []
-    private var dismissalTimer: Timer?
     private var inputMonitors: [Any] = []
     private weak var previouslyActiveApplication: NSRunningApplication?
     private var dismissalInputGraceUntil: TimeInterval = 0
+    private var activationMouseLocation: NSPoint = .zero
 
     init(configuration: SafeScreenConfiguration) {
         self.configuration = configuration.normalized
@@ -32,6 +31,7 @@ final class OverlayController {
         previouslyActiveApplication = NSWorkspace.shared.frontmostApplication
         let startTime = ProcessInfo.processInfo.systemUptime
         dismissalInputGraceUntil = reason == .manual ? startTime + 1.25 : 0
+        activationMouseLocation = NSEvent.mouseLocation
         let model = MatrixAnimationModel(configuration: configuration)
 
         windows = NSScreen.screens.map { screen in
@@ -39,13 +39,13 @@ final class OverlayController {
             view.frame = screen.frame
             let window = SafeScreenWindow(screen: screen, contentView: view)
             window.makeKeyAndOrderFront(nil)
+            window.makeFirstResponder(view)
             view.start()
             return window
         }
 
         NSApp.activate(ignoringOtherApps: true)
         installInputMonitors()
-        startDismissalTimer()
     }
 
     func hide() {
@@ -53,9 +53,8 @@ final class OverlayController {
             return
         }
 
-        dismissalTimer?.invalidate()
-        dismissalTimer = nil
         dismissalInputGraceUntil = 0
+        activationMouseLocation = .zero
         inputMonitors.forEach(NSEvent.removeMonitor)
         inputMonitors.removeAll()
 
@@ -69,7 +68,7 @@ final class OverlayController {
     }
 
     private func installInputMonitors() {
-        let mask: NSEvent.EventTypeMask = [
+        let localMask: NSEvent.EventTypeMask = [
             .leftMouseDown,
             .rightMouseDown,
             .otherMouseDown,
@@ -78,12 +77,12 @@ final class OverlayController {
             .rightMouseDragged,
             .otherMouseDragged,
             .scrollWheel,
-            .keyDown,
-            .flagsChanged
+            .keyDown
         ]
+        let globalMask = localMask.subtracting(.mouseMoved)
 
-        if let localMonitor = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { [weak self] event in
-            guard let self, !self.isIgnoringDismissalInput else {
+        if let localMonitor = NSEvent.addLocalMonitorForEvents(matching: localMask, handler: { [weak self] event in
+            guard let self, self.shouldDismiss(for: event) else {
                 return event
             }
 
@@ -93,8 +92,8 @@ final class OverlayController {
             inputMonitors.append(localMonitor)
         }
 
-        if let globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: mask, handler: { [weak self] _ in
-            guard let self, !self.isIgnoringDismissalInput else {
+        if let globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: globalMask, handler: { [weak self] event in
+            guard let self, self.shouldDismiss(for: event) else {
                 return
             }
 
@@ -108,20 +107,34 @@ final class OverlayController {
         ProcessInfo.processInfo.systemUptime < dismissalInputGraceUntil
     }
 
-    private func startDismissalTimer() {
-        dismissalTimer?.invalidate()
-        dismissalTimer = Timer.scheduledTimer(timeInterval: 0.25, target: self, selector: #selector(dismissalTick), userInfo: nil, repeats: true)
-        dismissalTimer?.tolerance = 0.05
+    private func shouldDismiss(for event: NSEvent?) -> Bool {
+        guard !isIgnoringDismissalInput else {
+            return false
+        }
+
+        guard let event else { return false }
+
+        switch event.type {
+        case .mouseMoved:
+            return hasMouseMovedEnough()
+        case .leftMouseDown,
+             .rightMouseDown,
+             .otherMouseDown,
+             .leftMouseDragged,
+             .rightMouseDragged,
+             .otherMouseDragged,
+             .scrollWheel,
+             .keyDown:
+            return true
+        default:
+            return false
+        }
     }
 
-    @objc private func dismissalTick() {
-        guard !isIgnoringDismissalInput else {
-            return
-        }
-
-        let idleSeconds = CGEventSource.secondsSinceLastEventType(.hidSystemState, eventType: .safeScreenAnyInput)
-        if idleSeconds < 0.75 {
-            hide()
-        }
+    private func hasMouseMovedEnough() -> Bool {
+        let location = NSEvent.mouseLocation
+        let dx = location.x - activationMouseLocation.x
+        let dy = location.y - activationMouseLocation.y
+        return dx * dx + dy * dy >= 64
     }
 }

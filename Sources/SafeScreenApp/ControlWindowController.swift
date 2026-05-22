@@ -33,6 +33,9 @@ final class ControlWindowController: NSWindowController {
         )
         window.title = "Safe Screen"
         window.isReleasedWhenClosed = false
+        window.isRestorable = false
+        window.level = .floating
+        window.collectionBehavior = [.moveToActiveSpace]
         window.center()
 
         super.init(window: window)
@@ -47,9 +50,13 @@ final class ControlWindowController: NSWindowController {
 
     func showPanel() {
         refresh()
+        guard let window else { return }
+        if !window.isVisible {
+            window.center()
+        }
+        window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
         NSApp.activate(ignoringOtherApps: true)
-        window?.center()
-        window?.makeKeyAndOrderFront(nil)
     }
 
     private func makeContentView() -> NSView {

@@ -1,7 +1,6 @@
 import AppKit
 
 @MainActor
-@main
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsStore: SettingsStore?
     private var loginItemController: LoginItemController?
@@ -9,9 +8,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var idleMonitor: IdleMonitor?
     private var statusMenuController: StatusMenuController?
     private var controlWindowController: ControlWindowController?
+    private var mainMenuController: MainMenuController?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        NSApp.setActivationPolicy(.accessory)
+        NSApp.setActivationPolicy(.regular)
 
         let configuration = AppConfiguration.load()
         let settingsStore = SettingsStore()
@@ -40,6 +40,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         controlWindowController.onSettingsChanged = { [weak statusMenuController] in
             statusMenuController?.refresh()
         }
+        let mainMenuController = MainMenuController(
+            overlayController: overlayController,
+            showControlPanel: { [weak controlWindowController] in
+                controlWindowController?.showPanel()
+            }
+        )
+        mainMenuController.install()
 
         idleMonitor.onIdleThresholdReached = { [weak overlayController] in
             overlayController?.show(reason: .idle)
@@ -52,8 +59,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         self.idleMonitor = idleMonitor
         self.statusMenuController = statusMenuController
         self.controlWindowController = controlWindowController
+        self.mainMenuController = mainMenuController
 
-        controlWindowController.showPanel()
+        DispatchQueue.main.async { [weak self] in
+            self?.controlWindowController?.showPanel()
+        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
@@ -64,5 +74,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         controlWindowController?.showPanel()
         return true
+    }
+
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        false
+    }
+
+    func applicationSupportsSecureRestorableState(_ app: NSApplication) -> Bool {
+        true
     }
 }

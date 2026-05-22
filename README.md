@@ -1,6 +1,6 @@
 # Safe Screen
 
-Safe Screen is a native macOS menu-bar app that protects an OLED screen from a static desktop while a MacBook is connected to power and used remotely.
+Safe Screen is a native macOS app that protects an OLED screen from a static desktop while a MacBook is connected to power and used remotely.
 
 After 5 minutes of local input inactivity, it opens black full-screen overlay windows on all displays and renders five low-brightness Matrix-style vertical streams. Every 20 seconds the streams move to new random screen positions through a smooth crossfade/slide transition.
 
@@ -28,14 +28,14 @@ If the workspace lives in `Documents`, macOS can attach FileProvider metadata to
 open "/Applications/Safe Screen.app"
 ```
 
-On launch, Safe Screen opens a small control window. The app also stays available in the macOS menu bar as `Safe`. From the window or menu you can:
+On launch, Safe Screen opens a small control window and shows a Dock icon. The app also stays available in the macOS menu bar as `Safe`. From the window or menu you can:
 
 - activate the screen manually with `Активировать сейчас`;
 - turn protection on or off;
 - enable `Открывать при входе`;
 - quit the app.
 
-The app intentionally has no Dock icon. If you close the control window, open it again from the green `Safe` item in the macOS menu bar.
+If you close the control window, open it again from the Dock icon, the app menu, or the green `Safe` item in the macOS menu bar.
 
 ## Debug Timing
 

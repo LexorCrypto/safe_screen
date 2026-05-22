@@ -14,6 +14,7 @@ final class OverlayController {
     private var dismissalTimer: Timer?
     private var inputMonitors: [Any] = []
     private weak var previouslyActiveApplication: NSRunningApplication?
+    private var dismissalInputGraceUntil: TimeInterval = 0
 
     init(configuration: SafeScreenConfiguration) {
         self.configuration = configuration.normalized
@@ -30,6 +31,7 @@ final class OverlayController {
 
         previouslyActiveApplication = NSWorkspace.shared.frontmostApplication
         let startTime = ProcessInfo.processInfo.systemUptime
+        dismissalInputGraceUntil = reason == .manual ? startTime + 1.25 : 0
         let model = MatrixAnimationModel(configuration: configuration)
 
         windows = NSScreen.screens.map { screen in
@@ -53,6 +55,7 @@ final class OverlayController {
 
         dismissalTimer?.invalidate()
         dismissalTimer = nil
+        dismissalInputGraceUntil = 0
         inputMonitors.forEach(NSEvent.removeMonitor)
         inputMonitors.removeAll()
 
@@ -80,17 +83,29 @@ final class OverlayController {
         ]
 
         if let localMonitor = NSEvent.addLocalMonitorForEvents(matching: mask, handler: { [weak self] event in
-            self?.hide()
+            guard let self, !self.isIgnoringDismissalInput else {
+                return event
+            }
+
+            self.hide()
             return event
         }) {
             inputMonitors.append(localMonitor)
         }
 
         if let globalMonitor = NSEvent.addGlobalMonitorForEvents(matching: mask, handler: { [weak self] _ in
-            self?.hide()
+            guard let self, !self.isIgnoringDismissalInput else {
+                return
+            }
+
+            self.hide()
         }) {
             inputMonitors.append(globalMonitor)
         }
+    }
+
+    private var isIgnoringDismissalInput: Bool {
+        ProcessInfo.processInfo.systemUptime < dismissalInputGraceUntil
     }
 
     private func startDismissalTimer() {
@@ -100,6 +115,10 @@ final class OverlayController {
     }
 
     @objc private func dismissalTick() {
+        guard !isIgnoringDismissalInput else {
+            return
+        }
+
         let idleSeconds = CGEventSource.secondsSinceLastEventType(.hidSystemState, eventType: .safeScreenAnyInput)
         if idleSeconds < 0.75 {
             hide()

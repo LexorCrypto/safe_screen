@@ -20,8 +20,16 @@ rm -rf "$APP_DIR"
 mkdir -p "$(dirname "$APP_DIR")"
 mkdir -p "$APP_DIR/Contents/MacOS" "$APP_DIR/Contents/Resources"
 
+VERSION_FILE="$ROOT_DIR/VERSION"
+if [[ ! -f "$VERSION_FILE" ]]; then
+  printf 'Missing VERSION file at %s\n' "$VERSION_FILE" >&2
+  exit 1
+fi
+VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
+
 cp "$BIN_DIR/SafeScreenApp" "$APP_DIR/Contents/MacOS/$APP_NAME"
 cp "$ROOT_DIR/Resources/Info.plist" "$APP_DIR/Contents/Info.plist"
+/usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP_DIR/Contents/Info.plist"
 swift "$ROOT_DIR/scripts/generate_icon.swift" "$APP_DIR/Contents/Resources/SafeScreen.icns"
 
 chmod +x "$APP_DIR/Contents/MacOS/$APP_NAME"

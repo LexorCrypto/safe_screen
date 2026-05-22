@@ -12,6 +12,13 @@
 - Документ `docs/ARCHITECTURE.md` с описанием модулей, потока данных и design rationale.
 - Отдельный документ `docs/VERSIONING.md` с правилами версионирования и релизов.
 - Этот `CHANGELOG.md` для истории изменений.
+- Файл `VERSION` в корне репозитория как единственный источник публичной версии.
+- Скрипт `scripts/set_version.sh` для bump версии: записывает `VERSION`, синхронизирует `CFBundleShortVersionString` и инкрементит `CFBundleVersion` в `Info.plist`.
+
+### Changed
+
+- `scripts/build_app.sh` и `scripts/build_dmg.sh` берут версию из файла `VERSION`.
+- GitHub Actions проверяет, что релизный tag совпадает с файлом `VERSION`, и падает при рассинхроне.
 
 ## [0.2.6] - 2026-05-22
 

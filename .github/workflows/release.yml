@@ -18,6 +18,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Verify tag matches VERSION
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          version="$(tr -d '[:space:]' < VERSION)"
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match VERSION file (expected v$version)"
+            exit 1
+          fi
+          echo "Tag $GITHUB_REF_NAME matches VERSION $version"
+
       - name: Run tests
         run: swift test
 

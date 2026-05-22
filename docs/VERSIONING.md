@@ -21,7 +21,15 @@ MAJOR.MINOR.PATCH
 
 ## Где хранится версия
 
-Главный источник версии - `Resources/Info.plist`.
+Единственный источник публичной версии - файл `VERSION` в корне репозитория.
+
+```text
+0.2.6
+```
+
+Это одна строка в формате `MAJOR.MINOR.PATCH`. Версию не редактируют вручную ни в `VERSION`, ни в `Info.plist` - её разносит скрипт `scripts/set_version.sh` (см. ниже).
+
+Скрипт `set_version.sh` зеркалит `VERSION` в `Resources/Info.plist`:
 
 ```xml
 <key>CFBundleShortVersionString</key>
@@ -30,14 +38,15 @@ MAJOR.MINOR.PATCH
 <string>9</string>
 ```
 
-Поля:
+| Поле | Источник | Назначение |
+| --- | --- | --- |
+| `VERSION` (файл) | редактируется через `set_version.sh` | единственный источник публичной версии |
+| `CFBundleShortVersionString` | зеркало `VERSION`, ставит `set_version.sh` | публичная версия в бандле |
+| `CFBundleVersion` | инкрементит `set_version.sh` | монотонно растущий build number |
 
-| Поле | Назначение |
-| --- | --- |
-| `CFBundleShortVersionString` | публичная версия приложения в формате `MAJOR.MINOR.PATCH` |
-| `CFBundleVersion` | монотонно растущий build number |
+При сборке `build_app.sh` дополнительно проставляет `CFBundleShortVersionString` в собираемом бандле прямо из `VERSION`, поэтому готовый `.app` всегда совпадает с `VERSION`, даже если `Info.plist` оказался рассинхронизирован.
 
-DMG-скрипт читает `CFBundleShortVersionString` и создает файл:
+DMG-скрипт читает `VERSION` и создает файл:
 
 ```text
 dist/Safe-Screen-<version>.dmg
@@ -48,6 +57,24 @@ dist/Safe-Screen-<version>.dmg
 ```text
 dist/Safe-Screen-0.2.6.dmg
 ```
+
+## Как менять версию
+
+Версию меняет только скрипт:
+
+```bash
+./scripts/set_version.sh 0.2.7
+```
+
+Скрипт:
+
+- проверяет формат `MAJOR.MINOR.PATCH`;
+- записывает новое значение в `VERSION`;
+- проставляет `CFBundleShortVersionString` в `Resources/Info.plist`;
+- увеличивает `CFBundleVersion` на единицу;
+- печатает дальнейшие шаги (commit, tag, push).
+
+Не редактируйте `VERSION` или `Info.plist` вручную - это снова создаст рассинхрон, ради устранения которого скрипт и существует.
 
 ## Когда повышать версию
 
@@ -104,7 +131,7 @@ dist/Safe-Screen-0.2.6.dmg
 
 ## Build number
 
-`CFBundleVersion` должен увеличиваться при каждом релизе, даже если публичная версия меняется только на patch.
+`CFBundleVersion` - монотонно растущий build number. `scripts/set_version.sh` увеличивает его на единицу при каждом запуске, поэтому вручную его трогать не нужно.
 
 Пример:
 
@@ -132,7 +159,7 @@ v0.2.7
 v0.3.0
 ```
 
-Tag должен совпадать с `CFBundleShortVersionString` в `Resources/Info.plist`.
+Tag должен совпадать с файлом `VERSION` (с префиксом `v`). GitHub Actions проверяет это перед сборкой: если `VERSION` содержит `0.2.7`, релизный tag обязан быть `v0.2.7`, иначе workflow падает.
 
 ## Release checklist
 
@@ -142,10 +169,13 @@ Tag должен совпадать с `CFBundleShortVersionString` в `Resource
 git status --short --branch
 ```
 
-2. Обновить версию в `Resources/Info.plist`:
+2. Обновить версию одним скриптом:
 
-- `CFBundleShortVersionString`;
-- `CFBundleVersion`.
+```bash
+./scripts/set_version.sh <version>
+```
+
+Скрипт сам запишет `VERSION` и синхронизирует `Resources/Info.plist`.
 
 3. Обновить `CHANGELOG.md`.
 
@@ -176,7 +206,7 @@ hdiutil verify dist/Safe-Screen-<version>.dmg
 8. Закоммитить изменения:
 
 ```bash
-git add Resources/Info.plist CHANGELOG.md README.md docs/VERSIONING.md
+git add VERSION Resources/Info.plist CHANGELOG.md README.md docs/VERSIONING.md
 git commit -m "Release v<version>"
 git push origin main
 ```
@@ -206,11 +236,12 @@ Workflow:
 Он запускается при push tag вида `v*` и делает следующее:
 
 1. checkout репозитория;
-2. `swift test`;
-3. `bash ./scripts/build_dmg.sh`;
-4. upload workflow artifact;
-5. `gh release create ...`;
-6. прикрепление DMG к GitHub Release.
+2. проверка, что tag совпадает с файлом `VERSION` (иначе workflow падает);
+3. `swift test`;
+4. `bash ./scripts/build_dmg.sh`;
+5. upload workflow artifact;
+6. `gh release create ...`;
+7. прикрепление DMG к GitHub Release.
 
 ## Локальная сборка DMG
 
@@ -240,7 +271,7 @@ scripts/build_dmg.sh
 
 Минимальный набор:
 
-- `Resources/Info.plist`;
+- `VERSION` (через `scripts/set_version.sh`, он же синхронизирует `Resources/Info.plist`);
 - `CHANGELOG.md`;
 - tag `v<version>`.
 

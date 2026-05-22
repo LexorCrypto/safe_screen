@@ -8,7 +8,12 @@ CONFIGURATION="${CONFIGURATION:-release}"
 APP_NAME="Safe Screen"
 APP_DIR="${APP_DIR:-$ROOT_DIR/build/${APP_NAME}.app}"
 DIST_DIR="${DIST_DIR:-$ROOT_DIR/dist}"
-VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROOT_DIR/Resources/Info.plist")"
+VERSION_FILE="$ROOT_DIR/VERSION"
+if [[ ! -f "$VERSION_FILE" ]]; then
+  printf 'Missing VERSION file at %s\n' "$VERSION_FILE" >&2
+  exit 1
+fi
+VERSION="$(tr -d '[:space:]' < "$VERSION_FILE")"
 DMG_NAME="${DMG_NAME:-Safe-Screen-${VERSION}.dmg}"
 DMG_PATH="${DMG_PATH:-$DIST_DIR/$DMG_NAME}"
 STAGING_DIR="$(mktemp -d "${TMPDIR:-/tmp}/safe-screen-dmg.XXXXXX")"

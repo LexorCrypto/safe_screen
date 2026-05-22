@@ -144,10 +144,13 @@ hdiutil verify dist/Safe-Screen-*.dmg
 MAJOR.MINOR.PATCH
 ```
 
-Текущая версия приложения хранится в `Resources/Info.plist`:
+Единственный источник публичной версии - файл `VERSION` в корне репозитория. Менять версию нужно через скрипт, а не руками:
 
-- `CFBundleShortVersionString` - публичная версия, например `0.2.6`;
-- `CFBundleVersion` - build number, например `9`.
+```bash
+./scripts/set_version.sh 0.2.7
+```
+
+Скрипт записывает `VERSION` и синхронизирует `Resources/Info.plist` (`CFBundleShortVersionString` и build number `CFBundleVersion`).
 
 GitHub Release создается по tag вида:
 
@@ -155,13 +158,13 @@ GitHub Release создается по tag вида:
 v0.2.6
 ```
 
-Подробные правила описаны в [docs/VERSIONING.md](docs/VERSIONING.md).
+Tag обязан совпадать с `VERSION` - это проверяет GitHub Actions. Подробные правила описаны в [docs/VERSIONING.md](docs/VERSIONING.md).
 
 ## GitHub Release
 
 Чтобы выпустить новый DMG:
 
-1. Обновите версию в `Resources/Info.plist`.
+1. Обновите версию: `./scripts/set_version.sh <version>`.
 2. Обновите `CHANGELOG.md`.
 3. Прогоните тесты и локальную сборку DMG.
 4. Создайте и отправьте tag:
@@ -173,6 +176,7 @@ git push origin v0.2.6
 
 Workflow `.github/workflows/release.yml` сам:
 
+- проверяет, что tag совпадает с `VERSION`;
 - запускает `swift test`;
 - собирает `dist/Safe-Screen-<version>.dmg`;
 - загружает DMG как workflow artifact;
@@ -182,6 +186,7 @@ Workflow `.github/workflows/release.yml` сам:
 ## Структура проекта
 
 ```text
+VERSION                      single source of truth for the app version
 Sources/SafeScreenApp/       macOS AppKit application
 Sources/SafeScreenCore/      deterministic Matrix animation model
 Tests/                       unit tests
@@ -191,6 +196,7 @@ scripts/build_app.sh         .app build script
 scripts/install_app.sh       install to /Applications
 scripts/build_dmg.sh         release DMG build script
 scripts/generate_icon.swift  app icon generator
+scripts/set_version.sh       version bump script
 .github/workflows/release.yml GitHub Release automation
 ```
 

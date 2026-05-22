@@ -22,6 +22,18 @@ If the workspace lives in `Documents`, macOS can attach FileProvider metadata to
 ./scripts/install_app.sh
 ```
 
+To create a downloadable release disk image:
+
+```bash
+bash ./scripts/build_dmg.sh
+```
+
+The DMG is created at:
+
+```text
+dist/Safe-Screen-<version>.dmg
+```
+
 ## Run
 
 ```bash
@@ -58,3 +70,14 @@ The production defaults are:
 swift test
 swift build -c release
 ```
+
+## GitHub Release
+
+Push a version tag to build and publish a DMG on GitHub Releases:
+
+```bash
+git tag v0.2.6
+git push origin v0.2.6
+```
+
+The release workflow runs tests, builds `dist/Safe-Screen-<version>.dmg`, and attaches it to the GitHub Release for that tag.

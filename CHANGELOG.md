@@ -6,6 +6,8 @@
 
 ## [Unreleased]
 
+## [0.2.7] - 2026-05-23
+
 ### Added
 
 - Расширенная проектная документация в `README.md`.
@@ -17,11 +19,15 @@
 
 ### Changed
 
+- Обновлена app/iconset-иконка: вместо простых зеленых полос используется темный
+  OLED-friendly экран с Matrix-дождем внутри рамки и защитным щитом.
+- Обновлена маленькая status/menu-bar иконка в том же визуальном стиле.
 - `scripts/build_app.sh` и `scripts/build_dmg.sh` берут версию из файла `VERSION`.
 - GitHub Actions проверяет, что релизный tag совпадает с файлом `VERSION`, и падает при рассинхроне.
 
 ### Fixed
 
+- Matrix-элементы иконки больше не выходят за верхнюю границу рамки.
 - `scripts/build_app.sh` повторяет `codesign` (до 3 попыток), если FileProvider-демон возвращает `com.apple.FinderInfo` xattrs на бандл во время подписи.
 - `scripts/build_dmg.sh` чистит xattrs и переподписывает бандл в staging-папке (`$TMPDIR`), гарантируя чистую подпись в релизном DMG независимо от состояния `build/`.
 
@@ -87,7 +93,8 @@
 - Установка в `/Applications` через `scripts/install_app.sh`.
 - Unit tests для deterministic Matrix animation model.
 
-[Unreleased]: https://github.com/LexorCrypto/safe_screen/compare/v0.2.6...HEAD
+[Unreleased]: https://github.com/LexorCrypto/safe_screen/compare/v0.2.7...HEAD
+[0.2.7]: https://github.com/LexorCrypto/safe_screen/releases/tag/v0.2.7
 [0.2.6]: https://github.com/LexorCrypto/safe_screen/releases/tag/v0.2.6
 [0.2.5]: https://github.com/LexorCrypto/safe_screen/compare/b9964e4...56b7fd6
 [0.2.1]: https://github.com/LexorCrypto/safe_screen/commit/b9964e4

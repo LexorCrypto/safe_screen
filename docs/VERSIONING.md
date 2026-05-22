@@ -12,8 +12,8 @@ MAJOR.MINOR.PATCH
 
 Примеры:
 
-- `0.2.6` - текущий стабильный выпуск;
-- `0.2.7` - patch-релиз с небольшим исправлением;
+- `0.2.7` - текущий стабильный выпуск;
+- `0.2.8` - patch-релиз с небольшим исправлением;
 - `0.3.0` - minor-релиз с новой пользовательской возможностью;
 - `1.0.0` - первый стабильный публичный релиз с зафиксированным поведением.
 
@@ -24,7 +24,7 @@ MAJOR.MINOR.PATCH
 Единственный источник публичной версии - файл `VERSION` в корне репозитория.
 
 ```text
-0.2.6
+0.2.7
 ```
 
 Это одна строка в формате `MAJOR.MINOR.PATCH`. Версию не редактируют вручную ни в `VERSION`, ни в `Info.plist` - её разносит скрипт `scripts/set_version.sh` (см. ниже).
@@ -33,9 +33,9 @@ MAJOR.MINOR.PATCH
 
 ```xml
 <key>CFBundleShortVersionString</key>
-<string>0.2.6</string>
+<string>0.2.7</string>
 <key>CFBundleVersion</key>
-<string>9</string>
+<string>10</string>
 ```
 
 | Поле | Источник | Назначение |
@@ -55,7 +55,7 @@ dist/Safe-Screen-<version>.dmg
 Например:
 
 ```text
-dist/Safe-Screen-0.2.6.dmg
+dist/Safe-Screen-0.2.7.dmg
 ```
 
 ## Как менять версию
@@ -63,7 +63,7 @@ dist/Safe-Screen-0.2.6.dmg
 Версию меняет только скрипт:
 
 ```bash
-./scripts/set_version.sh 0.2.7
+./scripts/set_version.sh 0.2.8
 ```
 
 Скрипт:
@@ -92,7 +92,7 @@ dist/Safe-Screen-0.2.6.dmg
 Пример:
 
 ```text
-0.2.6 -> 0.2.7
+0.2.7 -> 0.2.8
 ```
 
 ### Minor
@@ -109,7 +109,7 @@ dist/Safe-Screen-0.2.6.dmg
 Пример:
 
 ```text
-0.2.6 -> 0.3.0
+0.2.7 -> 0.3.0
 ```
 
 ### Major
@@ -136,9 +136,9 @@ dist/Safe-Screen-0.2.6.dmg
 Пример:
 
 ```text
-0.2.6 build 9
 0.2.7 build 10
-0.3.0 build 11
+0.2.8 build 11
+0.3.0 build 12
 ```
 
 Не переиспользуйте build number для разных релизов.
@@ -154,12 +154,12 @@ vMAJOR.MINOR.PATCH
 Примеры:
 
 ```text
-v0.2.6
 v0.2.7
+v0.2.8
 v0.3.0
 ```
 
-Tag должен совпадать с файлом `VERSION` (с префиксом `v`). GitHub Actions проверяет это перед сборкой: если `VERSION` содержит `0.2.7`, релизный tag обязан быть `v0.2.7`, иначе workflow падает.
+Tag должен совпадать с файлом `VERSION` (с префиксом `v`). GitHub Actions проверяет это перед сборкой: если `VERSION` содержит `0.2.8`, релизный tag обязан быть `v0.2.8`, иначе workflow падает.
 
 ## Release checklist
 

@@ -31,7 +31,7 @@ Safe Screen - нативное macOS-приложение для защиты OL
 
 Текущий релиз:
 
-[Safe-Screen-0.2.6.dmg](https://github.com/LexorCrypto/safe_screen/releases/download/v0.2.6/Safe-Screen-0.2.6.dmg)
+[Safe-Screen-0.2.7.dmg](https://github.com/LexorCrypto/safe_screen/releases/download/v0.2.7/Safe-Screen-0.2.7.dmg)
 
 ## Установка
 
@@ -147,7 +147,7 @@ MAJOR.MINOR.PATCH
 Единственный источник публичной версии - файл `VERSION` в корне репозитория. Менять версию нужно через скрипт, а не руками:
 
 ```bash
-./scripts/set_version.sh 0.2.7
+./scripts/set_version.sh <version>
 ```
 
 Скрипт записывает `VERSION` и синхронизирует `Resources/Info.plist` (`CFBundleShortVersionString` и build number `CFBundleVersion`).
@@ -155,7 +155,7 @@ MAJOR.MINOR.PATCH
 GitHub Release создается по tag вида:
 
 ```text
-v0.2.6
+v<version>
 ```
 
 Tag обязан совпадать с `VERSION` - это проверяет GitHub Actions. Подробные правила описаны в [docs/VERSIONING.md](docs/VERSIONING.md).
@@ -170,8 +170,8 @@ Tag обязан совпадать с `VERSION` - это проверяет Git
 4. Создайте и отправьте tag:
 
 ```bash
-git tag v0.2.6
-git push origin v0.2.6
+git tag v<version>
+git push origin v<version>
 ```
 
 Workflow `.github/workflows/release.yml` сам:

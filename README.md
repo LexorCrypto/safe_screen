@@ -186,13 +186,16 @@ Sources/SafeScreenApp/       macOS AppKit application
 Sources/SafeScreenCore/      deterministic Matrix animation model
 Tests/                       unit tests
 Resources/Info.plist         bundle metadata and version
+docs/                        project documentation
 scripts/build_app.sh         .app build script
 scripts/install_app.sh       install to /Applications
 scripts/build_dmg.sh         release DMG build script
+scripts/generate_icon.swift  app icon generator
 .github/workflows/release.yml GitHub Release automation
 ```
 
 ## Документация
 
 - [CHANGELOG.md](CHANGELOG.md) - история версий.
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) - архитектура: модули, поток данных, design rationale.
 - [docs/VERSIONING.md](docs/VERSIONING.md) - правила версионирования и релизов.

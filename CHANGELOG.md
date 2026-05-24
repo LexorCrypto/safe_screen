@@ -6,6 +6,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Release workflow обновлен на Node 24-compatible actions: `actions/checkout@v5` и `actions/upload-artifact@v6`.
+
 ## [0.3.0] - 2026-05-24
 
 ### Added

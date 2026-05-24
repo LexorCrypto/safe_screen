@@ -7,22 +7,26 @@ final class StatusMenuController: NSObject {
     private let settingsStore: SettingsStore
     private let loginItemController: LoginItemController
     private let overlayController: OverlayController
+    private let updateController: UpdateController
     private let configuration: SafeScreenConfiguration
     private let showControlPanel: () -> Void
 
     private let protectionItem = NSMenuItem()
     private let loginItem = NSMenuItem()
+    private let updateItem = NSMenuItem()
 
     init(
         settingsStore: SettingsStore,
         loginItemController: LoginItemController,
         overlayController: OverlayController,
+        updateController: UpdateController,
         configuration: SafeScreenConfiguration,
         showControlPanel: @escaping () -> Void
     ) {
         self.settingsStore = settingsStore
         self.loginItemController = loginItemController
         self.overlayController = overlayController
+        self.updateController = updateController
         self.configuration = configuration
         self.showControlPanel = showControlPanel
         super.init()
@@ -43,6 +47,10 @@ final class StatusMenuController: NSObject {
         let activateItem = NSMenuItem(title: "Активировать сейчас", action: #selector(activateNow), keyEquivalent: "")
         activateItem.target = self
         menu.addItem(activateItem)
+
+        updateItem.target = self
+        updateItem.action = #selector(checkForUpdates)
+        menu.addItem(updateItem)
 
         let idleItem = NSMenuItem(title: "Автовключение: \(Int(configuration.idleThreshold)) сек", action: nil, keyEquivalent: "")
         idleItem.isEnabled = false
@@ -73,6 +81,8 @@ final class StatusMenuController: NSObject {
         protectionItem.state = settingsStore.protectionEnabled ? .on : .off
         loginItem.title = "Открывать при входе"
         loginItem.state = loginItemController.isEnabled ? .on : .off
+        updateItem.title = updateController.menuItemTitle
+        updateItem.isEnabled = !updateController.isBusy
     }
 
     @objc private func showPanel() {
@@ -81,6 +91,10 @@ final class StatusMenuController: NSObject {
 
     @objc private func activateNow() {
         overlayController.show(reason: .manual)
+    }
+
+    @objc private func checkForUpdates() {
+        updateController.checkForUpdates()
     }
 
     @objc private func toggleProtection() {

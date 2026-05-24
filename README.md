@@ -15,6 +15,7 @@ Safe Screen - нативное macOS-приложение для защиты OL
 - Выключение только от явного ввода: клавиша, клик/тап, scroll, drag или движение мыши поверх Safe Screen.
 - Окно управления и menu-bar item `Safe`.
 - Опциональный автозапуск при входе в macOS.
+- Проверка обновлений через GitHub Releases с загрузкой нового DMG.
 - DMG-релизы через GitHub Releases.
 
 ## Требования
@@ -31,7 +32,7 @@ Safe Screen - нативное macOS-приложение для защиты OL
 
 Текущий релиз:
 
-[Safe-Screen-0.2.7.dmg](https://github.com/LexorCrypto/safe_screen/releases/download/v0.2.7/Safe-Screen-0.2.7.dmg)
+[Safe-Screen-0.3.0.dmg](https://github.com/LexorCrypto/safe_screen/releases/download/v0.3.0/Safe-Screen-0.3.0.dmg)
 
 ## Установка
 

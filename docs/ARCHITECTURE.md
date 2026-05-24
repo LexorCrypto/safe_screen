@@ -132,6 +132,7 @@ menu-bar-only).
 | `ControlWindowController.swift` | окно управления |
 | `MainMenuController.swift` | верхнее меню macOS `Safe Screen` |
 | `StatusMenuController.swift` | menu-bar item `Safe` и его меню |
+| `UpdateController.swift` | ручная проверка GitHub Releases, сравнение версий и загрузка DMG в Downloads |
 | `StatusIcon.swift` | рисует иконку (зелёные столбики) |
 
 ### Обнаружение простоя
@@ -283,6 +284,7 @@ Sources/SafeScreenApp/                     приложение AppKit
   ControlWindowController.swift            окно управления
   MainMenuController.swift                 верхнее меню macOS
   StatusMenuController.swift               menu-bar item Safe
+  UpdateController.swift                   GitHub Releases → DMG в Downloads
   StatusIcon.swift                         иконка приложения
 
 Tests/SafeScreenCoreTests/                 unit-тесты ядра

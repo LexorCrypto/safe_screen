@@ -12,7 +12,7 @@ MAJOR.MINOR.PATCH
 
 Примеры:
 
-- `0.2.7` - текущий стабильный выпуск;
+- `0.3.0` - текущий стабильный выпуск;
 - `0.2.8` - patch-релиз с небольшим исправлением;
 - `0.3.0` - minor-релиз с новой пользовательской возможностью;
 - `1.0.0` - первый стабильный публичный релиз с зафиксированным поведением.
@@ -24,7 +24,7 @@ MAJOR.MINOR.PATCH
 Единственный источник публичной версии - файл `VERSION` в корне репозитория.
 
 ```text
-0.2.7
+0.3.0
 ```
 
 Это одна строка в формате `MAJOR.MINOR.PATCH`. Версию не редактируют вручную ни в `VERSION`, ни в `Info.plist` - её разносит скрипт `scripts/set_version.sh` (см. ниже).
@@ -33,9 +33,9 @@ MAJOR.MINOR.PATCH
 
 ```xml
 <key>CFBundleShortVersionString</key>
-<string>0.2.7</string>
+<string>0.3.0</string>
 <key>CFBundleVersion</key>
-<string>10</string>
+<string>11</string>
 ```
 
 | Поле | Источник | Назначение |
@@ -55,7 +55,7 @@ dist/Safe-Screen-<version>.dmg
 Например:
 
 ```text
-dist/Safe-Screen-0.2.7.dmg
+dist/Safe-Screen-0.3.0.dmg
 ```
 
 ## Как менять версию
@@ -137,8 +137,8 @@ dist/Safe-Screen-0.2.7.dmg
 
 ```text
 0.2.7 build 10
-0.2.8 build 11
-0.3.0 build 12
+0.3.0 build 11
+0.3.1 build 12
 ```
 
 Не переиспользуйте build number для разных релизов.
@@ -154,12 +154,12 @@ vMAJOR.MINOR.PATCH
 Примеры:
 
 ```text
-v0.2.7
 v0.2.8
 v0.3.0
+v1.0.0
 ```
 
-Tag должен совпадать с файлом `VERSION` (с префиксом `v`). GitHub Actions проверяет это перед сборкой: если `VERSION` содержит `0.2.8`, релизный tag обязан быть `v0.2.8`, иначе workflow падает.
+Tag должен совпадать с файлом `VERSION` (с префиксом `v`). GitHub Actions проверяет это перед сборкой: если `VERSION` содержит `0.3.0`, релизный tag обязан быть `v0.3.0`, иначе workflow падает.
 
 ## Release checklist
 

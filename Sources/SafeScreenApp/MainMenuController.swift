@@ -3,10 +3,17 @@ import AppKit
 @MainActor
 final class MainMenuController: NSObject {
     private let overlayController: OverlayController
+    private let updateController: UpdateController
     private let showControlPanel: () -> Void
+    private let updateItem = NSMenuItem()
 
-    init(overlayController: OverlayController, showControlPanel: @escaping () -> Void) {
+    init(
+        overlayController: OverlayController,
+        updateController: UpdateController,
+        showControlPanel: @escaping () -> Void
+    ) {
         self.overlayController = overlayController
+        self.updateController = updateController
         self.showControlPanel = showControlPanel
         super.init()
     }
@@ -26,6 +33,10 @@ final class MainMenuController: NSObject {
         activateItem.target = self
         appMenu.addItem(activateItem)
 
+        updateItem.target = self
+        updateItem.action = #selector(checkForUpdates)
+        appMenu.addItem(updateItem)
+
         appMenu.addItem(.separator())
 
         let hideItem = NSMenuItem(title: "Скрыть Safe Screen", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
@@ -40,6 +51,12 @@ final class MainMenuController: NSObject {
 
         mainMenu.addItem(appMenuItem)
         NSApp.mainMenu = mainMenu
+        refresh()
+    }
+
+    func refresh() {
+        updateItem.title = updateController.menuItemTitle
+        updateItem.isEnabled = !updateController.isBusy
     }
 
     @objc private func showPanel() {
@@ -48,5 +65,9 @@ final class MainMenuController: NSObject {
 
     @objc private func activateNow() {
         overlayController.show(reason: .manual)
+    }
+
+    @objc private func checkForUpdates() {
+        updateController.checkForUpdates()
     }
 }
